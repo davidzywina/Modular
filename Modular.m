@@ -937,7 +937,7 @@ intrinsic FindRelationsOverKG(M::Rec, F::SeqEnum,d::RngIntElt : OverQ:=false, ll
     return psi, proved;
 end intrinsic;
 
-intrinsic FindCanonicalModel(M::Rec : lll:=[true,true,true,true,true], prec0:=0, prec_delta:=10) -> BoolElt, Rec
+intrinsic FindCanonicalModel(M::Rec : lll:=[true,true,true,true,true], prec0:=0, prec_delta:=10) ->  Rec
  {      
     Input:
             M:  a record of type ModularCurveRec (for example produced as output of CreateModularCurveRec) that
@@ -1366,7 +1366,7 @@ intrinsic ConvertModularFormExpansions(M1, M2, F, g : wt:=0) -> SeqEnum
             h_new:=&+[ power_of_zetaN1((k-1)*d) * R1![Coefficient(h,i)[k]: i in [0..AbsolutePrecision(h)-1]] : k in [1..EulerPhi(N1)]];
             h:=ChangePrecision(h_new,AbsolutePrecision(h));
 
-            h:=R1![Conjugate(Coefficient(h,l),d): l in [0..AbsolutePrecision(h)-1]] + O(qw^AbsolutePrecision(h));
+            //h:=R1![Conjugate(Coefficient(h,l),d): l in [0..AbsolutePrecision(h)-1]] + O(qw^AbsolutePrecision(h));
 
             p:=Floor(w2*(AbsolutePrecision(h)-1)/w1);
             h:=R1![ IsDivisibleBy(w1*b,w2) select Coefficient(h,(w1*b) div w2) else KN1!0 : b in [0..p]] + O(qw^(p+1));

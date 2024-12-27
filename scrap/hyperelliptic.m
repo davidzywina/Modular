@@ -1,6 +1,14 @@
 AttachSpec("EarlierCode/magma.spec");
 Attach("Modular.m"); 
 
+/*  This file contains the functions needed to directly check if a modular curve X_G has gonality 2, gonality 3,
+    or is bielliptic.    
+
+    Note that we use the gonality 2 classification for the gonality 3 function.
+    Note that we use the gonality 2 and 3 classifications for the bielliptic functions.
+*/
+
+
 /*  
     The following is the list of all congruence subgroups of SL(2,Z), up to conjugacy in GL(2,Z),
     that contain -I, have genus at least 3, and have gonality 2.  They are given by their 
@@ -50,11 +58,13 @@ function HasGonalityTwo(M : prec:=10)
             A boolean that is "true" when the geometric gonality of X_G is 2 and "false" otherwise.
 
         "prec" is an optional parameter for the initial precision of q-expansions to consider.
+
+        Note: we are not using the sequence "gonality_equals_2" since this function is used to prove it!
     */
 
     g:=M`genus;
     if g eq 0 then return false; end if;  // gonality 1 case
-    if g in {1,2} then return true; end if;  // always have gonality 2
+    if g in {1,2} then return true; end if;  // cases where we always have gonality 2
     
     // Compute relevant cusp forms of weight 2 if not already computed
     if not assigned M`k or M`k ne 2 or not assigned M`F or not assigned M`prec then
@@ -69,7 +79,8 @@ function HasGonalityTwo(M : prec:=10)
         M:=IncreaseModularFormPrecision(M,prec);
         F:=[M`F0[i]: i in [1..M`dimSk]];
 
-        // Find dimension of quadratic relations in F (given computed q-expansions)
+        //  Find dimension of quadratic relations in F.  This is computed with the given 
+        //  q-expansions, so there may be more relations that expected.
         d:=FindRelationsOverKG(M,F,2 : lll:=false, dim_only:=true);
 
         if d lt ((g-1)*(g-2)) div 2 then
@@ -101,9 +112,12 @@ function HasGonalityThree(M)
 
             When X_G has genus 6 also returns a second boolean that is "true" if and only if X_G is
             geometrically isomorphic to a smooth plane quintic.
+
+        Note: We are not using the sequence "gonality_equals_3" since this function is used to prove it!
+              We are making uses of "gonality_equals_2" though.
     */
     g:=M`genus;
-    if g in {0,1,2} or (g le 11 and M`CPname in gonality_equals_2) then  
+    if g in {0,1,2} or (g le 24 and M`CPname in gonality_equals_2) then  
         //Detects cases where the gonality is 1 or 2.
 
         if g eq 6 then return false, false; end if;
@@ -163,7 +177,6 @@ function HasGonalityThree(M)
             primes:=primes cat [p];
         end if;
     end while;
-
     for p in primes do
         P:=Factorization(ideal<ON|[p]>)[1][1];
         FF,iota:=ResidueClassField(P);
@@ -184,19 +197,22 @@ function HasGonalityThree(M)
         A:=Matrix(A);
         basis:=[Eltseq(b): b in Basis(NullspaceOfTranspose(A))];
         I2:=[ &+[b[i]*mon[i]: i in [1..#mon]] : b in basis ];
-        if #I2 ne ((g-2)*(g-3)) div 2 then continue p; end if;
+        if #I2 ne ((g-2)*(g-3)) div 2 then 
+            // Need to ensure the quadratic relations found are obtained by reducing equations in char 0.
+            continue p; 
+        end if;
 
         mon:=MonomialsOfWeightedDegree(Pol_FF,3);
         B:=Matrix([ [MonomialCoefficient(x[i]*f,m):m in mon] : f in I2, i in [1..g]]);
         time rankB:=Rank(B);
-        if Rank(B) eq Binomial(g+3-1,3)-(2*3-1)*(g-1) then
+        if rankB eq Binomial(g+3-1,3)-(2*3-1)*(g-1) then
             if g eq 6 then return false, false; end if;
             return false;
         end if;
-
     end for;
 
-    // We now actually compute quadratic relations.
+
+    // We now actually compute quadratic relations
     I2:=FindRelationsOverKG(M,F,2 : lll:=false);  
         
     K:=M`KG;
@@ -226,8 +242,8 @@ function HasGonalityThree(M)
     C:=Scheme(P5,M`psi);
     
     assert Dimension(C) eq 1; 
-    // This ensures "FindCanonicalModel" is correct; the issue is our classification of gonality 3  
-    // curves and smooth plane quintics is used by this function and we want to avoid a circular 
+    // This dimension check ensures "FindCanonicalModel" is correct; the issue is our classification of gonality 3  
+    // curves and smooth plane quintics is used by "FindCanonicalModel" and we want to avoid a circular 
     // argument!  Note: if only quadratic relations were considered this scheme would have dimension 2 instead.
 
     C:=Curve(P5,M`psi);
@@ -244,7 +260,7 @@ end function;
 
 
 
-function IsBielliptic0(K,g,psi)
+function IsBiellipticCanonical(K,g,psi)
     /*
         Let K be a perfect field and let g>3 be an integer.   Suppose that psi is a minimal set 
         of generators for the ideal I(C) in K[x_1,..,x_g] of a canonical curve C in P^{g-1}_K 
@@ -254,7 +270,7 @@ function IsBielliptic0(K,g,psi)
 
         When K is finite, a second boolean is also returned.  Suppose that C is obtained as good 
         reduction from a canonical curve C' in P^{g-1}_F over some number field F; assume further
-        that there is a mininmal set of generators of the ideal I(C') so that reduction induces
+        that there is a mininal set of generators of the ideal I(C') so that reduction induces
         a bijection with psi.  If the second boolean returned is true, then C' is geometrically
         bielliptic.  If it is false, no conclusion is made.
     */
@@ -266,13 +282,14 @@ function IsBielliptic0(K,g,psi)
 
     if g ge 5 and #psi3 ne 0 then
         return false, false;
-        //Castelnuovo–Severi inequality implies that a curve of genus at least 5 cannot be bielliptic and trigonal
-        //TODO: plane quintic case
+        // Castelnuovo–Severi inequality implies that a curve of genus at least 5 cannot be bielliptic and trigonal
+        // Also a smooth plane quintic cannot be bielliptic.
     end if;
 
     // With our assumptions, any degree 2 morphism from C to a genus 1 curve will arise
     // by projecting P^{g-1} from a unique point a not in C.
-    // We construct the scheme whose points will contain all such a.
+    // We construct the scheme whose points will consist of all such a.
+
     Pol1<[a]>:=PolynomialRing(K,g);
     Pol2<[x]>:=PolynomialRing(Pol1,g);
     PP:=[];
@@ -308,7 +325,7 @@ function IsBielliptic0(K,g,psi)
 
         I:=ideal<R|[R!f: f in psi]>;
         J0:=ideal<R|A>;
-        J:=IdealQuotient(J0,I); 
+        J:=IdealQuotient(J0,I); // Removes points on curve
         J:=Radical(J);
 
         PP:=ProjectiveSpace(K,g-1);
@@ -444,7 +461,7 @@ function IsBielliptic0(K,g,psi)
     end if;
 end function;
 
-function HyperellipticCurveIsBielliptic(F)
+function IsBiellipticHyperellipticOLD(F)
     /*
         Suppose that F is a separable polynomial in K[x], with K a field whose
         characteristic is not 2, such that y^2=F(x) defines a hyperelliptic 
@@ -455,26 +472,7 @@ function HyperellipticCurveIsBielliptic(F)
     K:=BaseRing(Parent(F));
     assert IsSeparable(F) and Degree(F) ge 5 and Characteristic(K) ne 2;
 
-    //"splitting";
-
-
-    //if Characteristic(K) eq 0 then
-    //    time SplittingField([F]);
-    //end if;
-
-    //K;
     K:=SplittingField(F);
-    //time L,roots:=RootsInSplittingField(f);
-    //L;
-
-    //F:=ChangeRing(F,K);
-    //"automorphisms";
-        //C:=HyperellipticCurve(F);
-        
-        //A:=AutomorphismGroup(C);
-        //#A;
-        //return true;
-
     roots:=[[r[1],1]: r in Roots(ChangeRing(F,K))];
     if IsOdd(#roots) then 
         roots:=roots cat [[1,0]];
@@ -524,48 +522,61 @@ function HyperellipticCurveIsBielliptic(F)
 
 end function;
 
-function HyperellipticCurveIsBiellipticNew(f)
+function IsBiellipticHyperelliptic(f)
     /*
-        FIX
-        Suppose that f is a separable polynomial in K[x], with K a field whose
-        characteristic is not 2, such that y^2=f(x) defines a hyperelliptic 
+        Suppose that f is a separable polynomial in K[x], with K a finite field of
+        characteristic not 2 or a number field, such that y^2=f(x) defines a hyperelliptic 
         curve C over K of genus 2 or 3.
 
         This function returns true if and only if C is geometrically bielliptic.
+
+        When K is finite, a second boolean is also returned.  Suppose that C is obtained as good 
+        reduction from a hyperelliptic curve C' y^2=F(x).
+        If the second boolean returned is true, then C' is geometrically
+        bielliptic.  If it is false, no conclusion is made.
+
+        (Warning: this is very slow when K is a number field)
     */
     K:=BaseRing(Parent(f));
     PolK<x>:=PolynomialRing(K);
     f:=PolK!f;
-    assert IsFinite(K) and Characteristic(K) ne 2;
+    assert Characteristic(K) ne 2;
     assert IsSeparable(f) and Degree(f) in {5,6,7,8};
     if IsOdd(Degree(f)) then
         while Evaluate(f,0) eq 0 do
-            f:=Evaluate(f,x+Random(K));
-            //fails for small K
+            if IsFinite(K) then
+                f:=Evaluate(f,x+Random(K));
+            else
+                f:=Evaluate(f,x+1);
+            end if;
         end while;
         d:=Degree(f)+1;
         f:=PolK!(x^d*Evaluate(f,1/x));
     end if;
 
+    // A bielliptic involution of our hyperelliptic curve will give matrix [a,b;c,d]
+    // that acts on Kbar(x) via linear fractional transformations and permutes the roots of f.
     Pol1<a,b,c,d>:=PolynomialRing(K,4);
-
     Pol2<x>:=PolynomialRing(Pol1);
-
-    f2:=Pol2!((c*x+d)^Degree(f)*Evaluate(f,(a*x+b)/(c*x+d)));
+    f2:=Pol2!((c*x+d)^Degree(f) * Evaluate(f,(a*x+b)/(c*x+d)));
     eqns:=Coefficients(LeadingCoefficient(f2)*Evaluate(f,x) - LeadingCoefficient(f)*f2);
-    eqns:=eqns cat [a^2+b*c-1, b*a+d*b, c*a+d*c, b*c+d^2-1];
-
-
+    eqns:=eqns cat [a^2+b*c-1, b*a+d*b, c*a+d*c, b*c+d^2-1];  // can take matrix, after increasing the field, to have square I.
 
     PolK<[y]>:=PolynomialRing(K,4);
     I:=ideal<PolK|[y[1]^2-1,y[1]-y[4],y[2],y[3]]>;
     J:=ideal<PolK|eqns>;
-    J:=IdealQuotient(J,I); 
+    J:=IdealQuotient(J,I); // ensures our matrix is not I or -I
     J:=Radical(J);
     eqns:=Basis(J);
     
-    if J eq PolK then return false; end if;
+    if J eq PolK then return false, false; end if;
 
+    // We have found bielliptic involutions!
+    if IsFinite(K) eq false then
+        return true;
+    end if;
+
+    // We now check if they can Hensel lift.
     AA:=AffineSpace(K,4);
     V:=Scheme(AA,Basis(J));
     for c in IrreducibleComponents(V) do
@@ -580,101 +591,24 @@ function HyperellipticCurveIsBiellipticNew(f)
             if Rank(B) eq Ncols(B) then
                 return true, true;
             end if;
-
-            //assert exists(i0){i: i in [1..g] | a[i] ne 0};
-            //a:=[a[i]/a[i0]: i in [1..g]];  
-            //yy:=[a[i]+y[i]: i in [1..g] | i lt i0] cat [1] cat [a[i]+y[i-1]: i in [1..g] | i gt i0];
-            //A_:=[Evaluate(f,yy): f in A];
-
-            //B:=[ [MonomialCoefficient(h,y[i]): i in [1..g-1]] : h in A_];
-            //B:=Matrix(B);
-            //if Rank(B) eq Ncols(B) then
-            //    return true, true;
-            //end if;
         end for;  
     end for;
 
-    assert false;
-    return true;
-
-    assert false;
-
-    //"splitting";
-
-
-    //if Characteristic(K) eq 0 then
-    //    time SplittingField([F]);
-    //end if;
-
-    //K;
-    K:=SplittingField(F);
-    //time L,roots:=RootsInSplittingField(f);
-    //L;
-
-    //F:=ChangeRing(F,K);
-    //"automorphisms";
-        //C:=HyperellipticCurve(F);
-        
-        //A:=AutomorphismGroup(C);
-        //#A;
-        //return true;
-
-    roots:=[[r[1],1]: r in Roots(ChangeRing(F,K))];
-    if IsOdd(#roots) then 
-        roots:=roots cat [[1,0]];
-    end if;
-    g:=(#roots-2) div 2;
-    assert g in {2,3};
-
-    P1:=ProjectiveSpace(K,1);
-
-    for i1 in [1..#roots] do
-    for i2 in [j: j in [1..#roots] | i1 lt j] do
-    for i3 in [j: j in [1..#roots] | j notin {i1,i2}] do
-    for i4 in [j: j in [1..#roots] | i3 lt j and j notin {i1,i2}] do
-
-        v1:=Vector(roots[i1]);
-        v2:=Vector(roots[i2]);
-        V:=VectorSpaceWithBasis([v1,v2]);
-
-        v3:=Vector(roots[i3]);
-        v4:=Vector(roots[i4]);
-        c3:=Coordinates(V,v3);
-        c4:=Coordinates(V,v4);
-        alpha:=c3[1]^(-1)*c4[2];
-        beta:=c3[2]^(-1)*c4[1];
-
-        A:=Transpose(Matrix([v1,v2]));
-        B:=Transpose(Matrix([alpha*v2,beta*v1]));
-        _,C:=IsConsistent(A,B);
-        assert C*A eq B;
-        Ct:=Transpose(C);
-        assert v1*Ct eq alpha*v2; 
-        assert v2*Ct eq beta*v1; 
-        assert v3*Ct eq v4;
-        
-        S:={P1!Eltseq(Vector(r)*Ct): r in roots} diff {P1!r: r in roots};
-
-        if IsEmpty(S) then
-            return true;
-        end if;
-
-    end for;
-    end for;
-    end for;
-    end for;
-
-    return false;
-
+    return true,false;
 end function;
 
-function IsBielliptic1(M)
+function IsBiellipticHyperellipticWithoutModel(M)
     /*  
-        Let M be a modular curve that is geometrically hyperelliptic and has genus 2 or 3.
+        Let M be a modular curve that is geometrically hyperelliptic.
         This function returns true if and only if M is geometrically bielliptic.
     */
     g:=M`genus;
-    assert g in {2,3};
+    if g eq 0 then return false; end if;
+    if g eq 1 then return false; end if;
+    if g gt 3 then
+        assert M`CPname in gonality_equals_2;
+        return false;
+    end if;
     if g eq 3 then 
         assert M`CPname in gonality_equals_2;
     end if;
@@ -689,7 +623,7 @@ function IsBielliptic1(M)
     M:=FindCanonicalModel(M);
     _,k:=Maximum(M`widths);
     prec:=[0:i in [1..M`vinf]];
-    prec[k]:=2*g+2+20;  //20? TODO
+    prec[k]:=2*g+2+20;  //TODO;  20 is adhoc
     M:=IncreaseModularFormPrecision(M,prec);
     prec:=M`prec;
     A:=Matrix([ [Coefficient(M`F0[i][k],n) : n in [0..prec[k]-1]] : i in [1..g] ]);
@@ -744,73 +678,19 @@ function IsBielliptic1(M)
         FF,iota:=ResidueClassField(P);
         PolFF<x>:=PolynomialRing(FF);
         F_P:=&+[iota(Coefficient(F,i))*x^i: i in [0..Degree(F)]];
-        is_bielliptic_P:=HyperellipticCurveIsBielliptic(F_P);
-        is_bielliptic_P_new:=HyperellipticCurveIsBiellipticNew(F_P);
+
+        is_bielliptic_P, lifts:=IsBiellipticHyperelliptic(F_P);
         if not is_bielliptic_P then
             return false;
         end if;
+        if is_bielliptic_P and lifts then
+            return true;
+        end if;
     end for;
 
-
-    //TODO: HARD CHECK
-
-    //"bielliptic";
-    //F:=ChangeRing(F,KN);
-    //HyperellipticCurveIsBielliptic(F);
-    
-
-    return true;
-
-    //B := [M`F0[i][k] : i in [1..g]];
-	//C := HyperellipticModel(B);
-
-        return true;
-
-    assert false;
-
-    /*
-    C;
-    return true;
-	if Dimension(Ambient(C)) eq 3 then
-		C := SimplifyGeometricHyperellipticCurve(C);
-	end if;
-	isH, H := IsHyperelliptic(C);
-	if isH then
-		H := ReducedMinimalWeierstrassModel(H);
-		P2<X,Y,Z> := CoordinateRing(Ambient(H));
-	end if;    
-    H;
-    return true;
-    assert false;
-    */
-    
-    M1:=CreateModularCurveRec(M`G);
-    M1:=FindModelOfXG(M1);
-    
-    C:=Curve(ProjectiveSpace(M`KG,3),M1`psi);
-    
-    assert false;
-
-    return true; //TODO:  HARD CHECK
-    assert false;
-
-    /*
-    M:=FindModularFormsWithVanishingConditions(M,mult);
-
-
-    FF:=[];
-    repeat 
-        M:=FindModularFormsWithVanishingConditions(M,mult);
-        FF:=FF cat [ M`F0 ];
-        multi[j]:=mult[j]+1;
-    until #M`F0 eq 0;
-
-
-    [#F: F in FF];
-    */
-
-    assert false;
-    return false;
+    // Reducing modulo primes has failed to determine anything.
+    // We now check directly (this can be very slow, so one might want to instead consider more primes!)
+    return IsBiellipticHyperelliptic(ChangeRing(F,KN));
 end function;
 
 function IsBielliptic(X)
@@ -822,8 +702,8 @@ function IsBielliptic(X)
     */
     g:=X`genus;
 
-    if g eq 2 or (g eq 3 and X`CPname in gonality_equals_2) then
-        return IsBielliptic1(X);
+    if g le 2 or X`CPname in gonality_equals_2 then
+        return IsBiellipticHyperellipticWithoutModel(X);
     end if;
 
     assert g ge 3;
@@ -844,11 +724,11 @@ function IsBielliptic(X)
         Pol2<[x]>:=PolynomialRing(Pol,3);
         c:=[a[1]^2+a[4]*a[2]+a[7]*a[3]-1, a[2]*a[1]+a[5]*a[2]+a[8]*a[3], a[3]*a[1]+a[6]*a[2]+a[9]*a[3], 
             a[4]*a[1]+a[5]*a[4]+a[7]*a[6], a[4]*a[2]+a[5]^2+a[8]*a[6]-1, a[4]*a[3]+a[6]*a[5]+a[9]*a[6],
-            a[7]*a[1]+a[8]*a[4]+a[9]*a[7], a[7]*a[2]+a[8]*a[5]+a[9]*a[8], a[7]*a[3]+a[8]*a[6]+a[9]^2-1];
-        c:=c cat [a[1]+a[5]+a[9]+1];
+            a[7]*a[1]+a[8]*a[4]+a[9]*a[7], a[7]*a[2]+a[8]*a[5]+a[9]*a[8], a[7]*a[3]+a[8]*a[6]+a[9]^2-1]; //A^2=I
+        c:=c cat [a[1]+a[5]+a[9]+1]; // tr(A)=-1
         F:=X`psi[1];
         h:=Evaluate(F,[a[1]*x[1]+a[2]*x[2]+a[3]*x[3],a[4]*x[1]+a[5]*x[2]+a[6]*x[3], a[7]*x[1]+a[8]*x[2]+a[9]*x[3]])
-           -Evaluate(F,[x[1],x[2],x[3]]);
+           -Evaluate(F,[x[1],x[2],x[3]]); 
         c:=c cat Coefficients(h);
         V:=Scheme(AffineSpace(X`KG,9),c);
         if IsEmpty(V) eq false then
@@ -940,14 +820,14 @@ function IsBielliptic(X)
         F0:=[[den*f: f in X`F0[i]]: i in [1..g]];
         mon:=MonomialsOfWeightedDegree(PolynomialRing(Integers(),g),2);
         Q:=[];
-        for m in mon do
-            m_F0:=[ Evaluate(m,[f[i]: f in F0]) : i in [1..X`vinf] ];
-            v:=&cat[ [ iota_(ON!Coefficient(m_F0[i],j)) : j in [0..X`prec[i]-1] ] : i in [1..X`vinf] ];
+        mon_F0:=[[Evaluate(m,[f[i]: f in F0]) : i in [1..X`vinf]] : m in mon];
+        prec0:=[ Minimum([AbsolutePrecision(f[i]):f in mon_F0]) : i in [1..X`vinf]];
+        for f in mon_F0 do            
+            v:=&cat[ [ iota_(ON!Coefficient(f[i],j)) : j in [0..prec0[i]-1] ] : i in [1..X`vinf] ];
             Q:=Q cat [v];
         end for;
         Q:=Matrix(Q);
-        // TODO: Over FF_ and not FF now
-        d:=Nrows(Q)-Rank(Q);        
+        d:=Nrows(Q)-Rank(Q);          
         if d ne Binomial(g+2-1,2)-(2*2-1)*(g-1) then
             continue p;
         end if;
@@ -955,11 +835,11 @@ function IsBielliptic(X)
         I_P:=ideal<PolFF|psi_P>;
 
         // We check the Hilbert polynomial (not needed but quick reality check)
-        PolQ<xx>:=PolynomialRing(Rationals());
-        HP:=PolQ!HilbertPolynomial(I_P);
-        assert HP eq (2*g-2)*xx-g+1;
+        //PolQ<xx>:=PolynomialRing(Rationals());
+        //HP:=PolQ!HilbertPolynomial(I_P);
+        //assert HP eq (2*g-2)*xx-g+1;
         
-        is_bielliptic_P, proof :=IsBielliptic0(FF,g,psi_P);
+        is_bielliptic_P, proof :=IsBiellipticCanonical(FF,g,psi_P);
         if is_bielliptic_P eq false then
             return false;
         end if;
@@ -970,8 +850,8 @@ function IsBielliptic(X)
         
     end for;
 
-    // Reducing modulo prime has not definitively determined if X is bielliptic or not.
-    // We now check directly.
-
-    return IsBielliptic0(X`KG,X`genus,X`psi);
+    // If for some reason, reducing modulo primes has not definitively determined if X is 
+    // bielliptic or not, we will now check directly (this is slower since we are working
+    // over number fields and not finite fields).
+    return IsBiellipticCanonical(X`KG,X`genus,X`psi);
 end function;
