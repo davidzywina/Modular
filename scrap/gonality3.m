@@ -159,8 +159,9 @@ for r in cp_data do
     // Create the modular curve X_G
     time X:=CreateModularCurveRec(G); 
 
-    // Checks whether gonality is 3
+    // Checks whether gonality is 3    
     b:=HasGonalityThree(X);
+    
     if b then
         gonality_at_most_3 cat:=[r`name];
     end if;
