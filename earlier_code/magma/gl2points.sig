@@ -1,0 +1,29 @@
+177,1
+S,GL2PointCountPrecompute,"Precomputes a vector of weighted class numbers to be used for fast point-counting on modular curves of a fixed level N over a fixed finite field Fq, using parameters ind:=GL2SimilarityClassIndexMap(N) and htab:=ClassNumberTable(B) with B >= 4*q",0,2,0,0,0,0,0,0,0,148,,0,0,148,,160,-38,-38,-38,-38,-38
+S,GL2PointCountsPrecompute,Precomputes a matrix of weighted class numbers to be used for fast pointcounting on modular curves of a fixed level N modulo primes p <= B coprime to N,1,1,1,82,0,148,2,0,0,0,0,0,0,0,82,,0,0,148,,155,82,-38,-38,-38,-38
+S,GL2PointCountsPrecompute,Precomputes a matrix of weighted class numbers to be used for fast pointcounting on modular curves of a fixed level N modulo primes p <= B coprime to N,0,2,0,0,0,0,0,0,0,148,,0,0,148,,155,82,-38,-38,-38,-38
+S,GL2PointCounts,Computes vector of point counts of X_H over finite fields Fq for prime powers q in Q using precomputed matrix M (which should have a column for each q in Q),1,1,1,82,0,148,3,0,0,0,0,0,0,0,155,,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2Traces,Computes vector of Frobenius traces of X_H over finite fields Fq for prime powers q in Q using precomputed matrix M (which should have a column for each q in Q),1,1,1,82,0,148,3,0,0,0,0,0,0,0,155,,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2FrobeniusMatrices,The set of Frobenius matrices that arise for elliptic curves with the specified j-invariant over a finite field,0,1,0,0,0,0,0,0,0,85,,83,-38,-38,-38,-38,-38
+S,GL2FrobeniusMatrices,The set of Frobenius matrices that arise for elliptic curves over the field with q elements,0,1,0,0,0,0,0,0,0,148,,83,-38,-38,-38,-38,-38
+S,GL2FrobeniusMatrices,The set of Frobenius matrices that arise for elliptic curves over the finite field Fq,0,1,0,0,0,0,0,0,0,84,,83,-38,-38,-38,-38,-38
+S,GL2jCounts,"A list of counts of the number of Fq-points above each points of Y(1), ordered as GF(q) is ordered",0,2,0,0,0,0,0,0,0,148,,0,0,178,,83,-38,-38,-38,-38,-38
+S,GL2jCounts,"A list of lists of counts of the number of Fq-points above each points of Y(1), ordered as GF(q) is ordered for q in Q",1,1,1,82,0,148,2,0,0,0,0,0,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2jInvariants,A list of the affine points in the set j(X_H(Fq)),0,2,0,0,0,0,0,0,0,148,,0,0,178,,83,-38,-38,-38,-38,-38
+S,GL2jInvariants,A list of lists of the affine points in the set j(X_H(Fq)) for q in Q,0,2,0,0,0,0,0,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2jInvariantTest,True if j is an element of j(X_H(F_q)),0,2,0,0,0,0,0,0,0,85,,0,0,178,,36,-38,-38,-38,-38,-38
+S,GL2jInvariantTest,True if j is an element of j(X_H(F_p)) for p <= B coprime to N,0,3,0,0,0,0,0,0,0,148,,0,0,148,,0,0,178,,36,-38,-38,-38,-38,-38
+S,GL2jInvariantTest,True if j is an element of j(X_H(F_p)) for p <= B coprime to N and the denominator of j,0,3,0,0,0,0,0,0,0,148,,0,0,267,,0,0,178,,36,-38,-38,-38,-38,-38
+S,GL2PointCount,"Returns the number of Fq-rational points on the modular curve X_H of level N with permutation character f:=GL2PermutationCharacter(GL2IncludeNegativeOne(H)) and rational cusp counts C:=GL2RationalCuspCounts(H), given class number table htab[-D]=h(D) for discriminants |D| <= 4*q",2,1,1,82,0,148,3,1,82,0,148,5,0,0,0,0,0,0,0,148,,0,0,82,,0,0,41,,0,0,82,,0,0,148,,148,-38,-38,-38,-38,-38
+S,GL2PointCounts,Sequence of Fq-rational points on X_H for q in Q (which must be prime powers or lists of prime powers coprime to the level of H),1,1,1,82,0,148,2,0,0,0,0,0,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2Traces,The Frobenius traces of X_H/Fq for q in Q (which must be prime powers or lists of prime powers coprime to the level of H),0,2,0,0,0,0,0,0,0,82,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2PointCount,The number of Fq-rational points on X_H,0,2,0,0,0,0,0,0,0,148,,0,0,178,,148,-38,-38,-38,-38,-38
+S,GL2PointCounts,"Sequence of Fp-point counts on X_H/Fp for p >= B0 not dividing N up to B. If PrimePowers is set each entry is a list of integers giving point counts over Fq for q=p,p^2,...<= B. If ZeroFill is set the returned array will have an entry for every prime p in [B0,B] with zeros or empty lists inserted at bad primes",0,2,0,0,0,0,0,0,0,148,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2Traces,"Frobenius traces of X_H at p >= B0 (or list of traces for powers of p up to B if PrimePowers is set) not dividing N up to B. If ZeroFill is set the returned array will have an entry for every prime p in [B0,B] with zeros or empty lists inserted at bad primes",0,2,0,0,0,0,0,0,0,148,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2PointCounts,"The sequence of Fq-point counts on X_H/Fq for q=p,p^2,...,p^r for a prime power p",0,3,0,0,0,0,0,0,0,148,,0,0,148,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2Traces,"The sequence of Frobenius traces of X_H/Fq for q=p,p^2,...,p^r",0,3,0,0,0,0,0,0,0,148,,0,0,148,,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2LPolynomial,The L-polynomial of X_H/Fq for a prime power q coprime to the level of H,0,2,0,0,0,0,0,0,0,148,,0,0,178,,312,-38,-38,-38,-38,-38
+S,GL2IsogenyClass,"The Cremona label of the isogeny class of the Jacobian of the genus 1 curve X_H, along with its rank. Will fail if the level is out of range of the Cremona DB",0,1,0,0,0,0,0,0,0,178,,298,148,-38,-38,-38,-38
+S,GL2QInfinite,"True if j(X_H(Q)) is infinite, false otherwise",0,1,0,0,0,0,0,0,0,178,,36,-38,-38,-38,-38,-38
+S,GL2QObstructions,"List of good places p where X_H has no Qp-points (p=0 is used for the real place). When specified, g:=GL2Genus(H), T:=GL2Traces(H,B), C:=GL2RationalCuspCounts(H). B will set to NthPrime(T) if T is nonempty or to 4*g^2 if neither B nor T is specified",0,1,0,0,0,0,0,0,0,178,,82,-38,-38,-38,-38,-38
+S,GL2GonalityBounds,"Returns a quadriuple listing lower and upper bounds on the K-gonality of X_H (valid for any number field K) followed by lower and upper bounds on the Qbar-gonality, and (optionally) a prime power used to prove lower bounds via point-counting",0,1,0,0,0,0,0,0,0,178,,82,148,-38,-38,-38,-38
