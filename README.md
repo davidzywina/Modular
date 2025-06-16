@@ -1,8 +1,8 @@
 # Modular
 
-This `Magma` code is for computing modular forms and models of modular curves.  It is an improvement of some previous code that was used to obtain a computational version of Serre's open image theorem (https://github.com/davidzywina/OpenImage).  
+This `Magma` code is for computing modular forms and models of modular curves.  It is an improvement of some [previous code](https://github.com/davidzywina/OpenImage) that was used to obtain a computational version of Serre's open image theorem.  
 
-Details on the theory behind this code can be found in the preprint *"Classification of modular curves with low gonality"*.  The computations in that paper can be found in the directory `classification`.
+Details on the theory behind this code can be found in the preprint [Classification of modular curves with low gonality](https://pi.math.cornell.edu/~zywina/papers/lowgonality.pdf).  The computations in that paper can be found in the directory `classification`.
 
 To load the code, type the following in `Magma` from the base directory of the repository (or with appropriate pathname otherwise):
 
