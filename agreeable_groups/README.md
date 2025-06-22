@@ -1,4 +1,4 @@
-# Agreeable groups of hight genus
+# Agreeable groups of higher genus
 
 For a non-CM elliptic curve E over Q, the image of the adelic Galois representation of E is an open subgroup of GL(2,Zhat) whose agreeable closure we denote by G_E.
 
