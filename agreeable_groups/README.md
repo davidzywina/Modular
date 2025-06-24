@@ -1,11 +1,7 @@
 # Agreeable groups of higher genus
 
-For a non-CM elliptic curve E over $\mathbb{Q}$, the image of the adelic Galois representation of E is an open subgroup $G_E$ of $GL_2(\widehat{\mathbb{Z}})$.  It is [conjectured ](https://arxiv.org/abs/2206.14959) that the index $[GL_2(\widehat{\mathbb{Z}}):G_E]$ must lie in the set 
-$$
- \left\{\begin{array}{c} 2, 4, 6, 8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48, 54, 60, 72, 80, 84,
- 96, 108,\\ 112, 120, 128, 144, 160, 182, 192, 200, 216, 220, 224, 240, 288, 300, 
-336, \\360, 384, 480, 504, 576, 768, 864, 1152, 1200, 1296, 1536, 2736 \end{array}\right\}.
-$$
+For a non-CM elliptic curve E over $\mathbb{Q}$, the image of the adelic Galois representation of E is an open subgroup $G_E$ of $GL_2(\widehat{\mathbb{Z}})$.  It is [conjectured ](https://arxiv.org/abs/2206.14959) that the index $[GL_2(\widehat{\mathbb{Z}}):G_E]$ must be one of the following:  2, 4, 6, 8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48, 54, 60, 72, 80, 84, 96, 108, 112, 120, 128, 144, 160, 182, 192, 200, 216, 220, 224, 240, 288, 300, 
+336, 360, 384, 480, 504, 576, 768, 864, 1152, 1200, 1296, 1536, 2736.
 
 If the conjecture fails, then we obtain an "unexpected" rational point on a modular curve $X_G$ of genus at least 2 for a certain open group $G$.
 
