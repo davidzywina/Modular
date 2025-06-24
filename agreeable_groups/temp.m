@@ -1,7 +1,3 @@
-
-ExtraGroupRec := recformat<N:RngIntElt, gens,label:SeqEnum, LMFDBlabel:MonStgElt, is_unentangled:BoolElt>;
-
-groups:=
 [ PowerStructure(Rec) |
     rec<ExtraGroupRec | 
         N := 24,
@@ -3464,4 +3460,4 @@ groups:=
         ],
         label := [ Strings() | "8K0-16a", "3A0-3a", "1A0-1a", "1A0-1a", "1A0-1a", "1A0-1a", "1A0-1a", "1A0-1a", "1A0-1a" ],
         is_unentangled := true>
-];
+]

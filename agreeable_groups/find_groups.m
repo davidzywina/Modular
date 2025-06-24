@@ -271,7 +271,7 @@ end for;
 " ";
 "Optimizing groups and putting in a sequence ready for output";
 
-ExtraGroupRec := recformat<N:RngIntElt,gens,label: SeqEnum>;
+ExtraGroupRec := recformat<N:RngIntElt, gens,label:SeqEnum, LMFDBlabel:MonStgElt, is_unentangled:BoolElt>;
 
 groups:=[];
 for k in S1 do
@@ -281,7 +281,7 @@ for k in S1 do
     G:=GL2MinimizeGenerators(G);  // choose smaller set of generators
     gens:=[[Integers()!a : a in Eltseq(g)] : g in Generators(G)];
 
-    r:=rec<ExtraGroupRec  | N:=N, gens:=gens, label:=k>;
+    r:=rec<ExtraGroupRec  | N:=N, gens:=gens, label:=k, is_unentangled:=false>;
     groups cat:= [r];
 end for;
 
@@ -305,7 +305,7 @@ for u in S2 do
         if k2[i] ne "1A0-1a" then label[i]:=k2[i]; end if;
     end for;
 
-    r:=rec<ExtraGroupRec  | N:=N, gens:=gens, label:=label>;
+    r:=rec<ExtraGroupRec  | N:=N, gens:=gens, label:=label, is_unentangled:=true>;
     groups cat:= [r];      
 end for;
 
