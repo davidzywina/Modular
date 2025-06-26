@@ -3,6 +3,18 @@ AttachSpec("../Modular.spec");
 
 load "groups.m";
 
+
+for r in adelicimagedata do
+    GL2:=GL2Ambient(r`level);
+    G:=sub<GL2|r`generators>;
+    if {GL2Genus(M): M in IntermediateSubgroups(GL2,G) *} then
+        r`label;
+    end if;
+end for;
+
+
+// 24.72.2.ii.1
+
 /*
 
 [ 235, 5, 2, 36 ]
