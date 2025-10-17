@@ -1762,7 +1762,7 @@ intrinsic FindModularForms(k::RngIntElt, M::Rec : lll:=[true,false], saturation:
                 p:=NextPrime(p);
                 P:=Factorization(ideal<ON|[p]>)[1][1];
                 FF_P,iota:=ResidueClassField(P);
-            until N mod p ne 0 and GL2Order(M`G) mod p ne 0 and Rank(ChangeRing(Matrix(B),iota)) eq #B;
+            until N mod p ne 0 and GL2Order(M`G) mod p ne 0 and (#B eq 0 or Rank(ChangeRing(Matrix(B),iota)) eq #B);
         end if;
 
     until done;
