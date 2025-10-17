@@ -1644,7 +1644,10 @@ intrinsic FindModularForms(k::RngIntElt, M::Rec : lll:=[true,false], saturation:
         */
         conjugates:=conjugates cat [AssociativeArray()];
         assert #conjugates eq count;
-        conjugates[count][[]]:=ff;
+
+        //conjugates[count][[]]:=ff;
+        conjugates[count][[Integers()|]]:=ff;   //This change made to address issues introduced in Magma v2.29-1.
+        
         for j in [1..#Iota] do // index of our prime ideals used
             for l in [1..count] do // index of our a's considered
                 if l in handled[j] then
